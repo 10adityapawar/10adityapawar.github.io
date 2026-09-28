@@ -5,32 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pineapple Clipper</title>
 <style>
-  :root { --bg: #fff; --fg: #1a1a1a; --muted: #555; --link: #0b57d0; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #eee; --muted: #aaa; --link: #8ab4f8; } }
+  :root { --bg: #fff; --fg: #1a1a1a; --muted: #555; --link: #0b57d0; --line: #ddd; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #eee; --muted: #aaa; --link: #8ab4f8; --line: #333; } }
   body { background: var(--bg); color: var(--fg); font: 17px/1.6 system-ui, sans-serif; max-width: 680px; margin: 0 auto; padding: 32px 16px; }
-  h1 { font-size: 1.8rem; margin-bottom: .2em; }
-  p.sub { color: var(--muted); margin-top: 0; }
+  header { display: flex; align-items: center; gap: 14px; }
+  header img { width: 64px; height: 64px; }
+  h1 { font-size: 1.8rem; margin: 0; }
+  p.sub { color: var(--muted); margin: 0; }
+  nav { margin: 20px 0; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  nav a { margin-right: 18px; }
   a { color: var(--link); }
 </style>
 </head>
 <body>
-<h1>Pineapple Clipper</h1>
-<p class="sub">A personal tool for posting short stream highlights.</p>
+<header>
+  <img src="icon.png" alt="">
+  <div>
+    <h1>Pineapple Clipper</h1>
+    <p class="sub">A personal tool for posting short stream highlights.</p>
+  </div>
+</header>
 
-<p>Pineapple Clipper is a small program that runs on its owner's own computer. It finds popular
-moments from public livestreams, turns them into short vertical videos, and uploads them to
-YouTube channels and TikTok accounts that belong to its owner.</p>
+<nav><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></nav>
+
+<p>Pineapple Clipper is a small desktop program that runs on its owner's own computer. It finds
+popular moments from public livestreams, turns them into short vertical videos with captions, and
+lets the owner review each one before posting it to the owner's own channels.</p>
 
 <p>It is not a public service. Nobody else signs up for it or uses it, and it only posts to the
 owner's own accounts.</p>
 
+<h2>Uses YouTube API Services</h2>
+<p>Pineapple Clipper uses YouTube API Services to upload videos. The owner reviews every video and sets
+its title, description, and visibility before it is uploaded. By using the app, you agree to the
+<a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a>, and Google's handling of your
+data is covered by the <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.</p>
+
 <h2>What it uses your account for</h2>
 <ul>
-  <li><strong>YouTube:</strong> uploading videos to the channel you choose when you sign in, and
-  reading that channel's name to confirm the sign-in worked.</li>
-  <li><strong>TikTok:</strong> posting videos to the account you sign in with.</li>
+  <li>Uploading videos to the YouTube channel you choose when you sign in.</li>
+  <li>Reading that channel's name to confirm the sign-in worked.</li>
 </ul>
+<p>You can remove its access at any time at
+<a href="https://security.google.com/settings/security/permissions">security.google.com/settings/security/permissions</a>.</p>
 
-<p><a href="privacy.html">Privacy policy</a> &middot; <a href="terms.html">Terms of service</a></p>
+<p>Contact: <a href="mailto:kingadipawar23@gmail.com">kingadipawar23@gmail.com</a></p>
 </body>
 </html>
