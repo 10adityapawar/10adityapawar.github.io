@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adi's AI Projects</title>
+<meta name="description" content="Apps, tools and games Adi built by pairing with Claude Code.">
+<link rel="icon" href="images/clipper-icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d12;
+  --bg-2: #11141b;
+  --card: #151922;
+  --card-2: #1b202b;
+  --line: #262c39;
+  --text: #eef1f6;
+  --muted: #9aa3b5;
+  --faint: #6b7385;
+  --accent: #ffc94a;
+  --accent-2: #ff8a3d;
+  --live: #3ddc97;
+  --desk: #5ab4ff;
+  --wip: #c58bff;
+  --shadow: 0 20px 50px rgba(0,0,0,.45);
+  --radius: 18px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: clip; }
+body {
+  margin: 0; color: var(--text);
+  background: radial-gradient(700px 360px at 25% 0, rgba(255,201,74,.11), transparent 70%),
+              radial-gradient(600px 360px at 80% 0, rgba(90,180,255,.09), transparent 70%) no-repeat, var(--bg);
+  font: 16px/1.55 Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+body.locked { overflow: hidden; }
+h1, h2, h3, .display { font-family: "Space Grotesk", Inter, sans-serif; letter-spacing: -.02em; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ---------- Welcome popup ---------- */
+#welcome {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px;
+  background: radial-gradient(1200px 700px at 50% 40%, #1d2333 0%, #07080c 70%);
+  transition: opacity .6s ease, visibility .6s;
+}
+#welcome.gone { opacity: 0; visibility: hidden; }
+#welcome canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.welcome-box { position: relative; text-align: center; max-width: 640px; animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
+.welcome-box .hi { color: var(--muted); font-size: 15px; letter-spacing: .28em; text-transform: uppercase; margin: 0 0 14px; }
+.welcome-box h1 {
+  margin: 0; font-size: clamp(40px, 8vw, 76px); line-height: 1.02; font-weight: 700;
+  background: linear-gradient(100deg, #fff 10%, var(--accent) 55%, var(--accent-2) 90%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.welcome-box p { color: var(--muted); font-size: 18px; margin: 20px auto 34px; max-width: 480px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer;
+  font: 600 16px/1 Inter, sans-serif; padding: 15px 26px; border-radius: 999px;
+  background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #1a1205;
+  box-shadow: 0 10px 30px rgba(255,160,60,.25); transition: transform .15s, box-shadow .15s; text-decoration: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(255,160,60,.35); }
+.btn:focus-visible, .card:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); box-shadow: none; }
+.btn.ghost:hover { border-color: var(--muted); }
+.btn.sm { padding: 10px 16px; font-size: 14px; }
+@keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
+
+/* ---------- Page ---------- */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+header.hero { padding: 96px 0 48px; position: relative; }
+
+.eyebrow { color: var(--accent); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; font-size: 13px; margin: 0 0 14px; }
+.hero h1 { font-size: clamp(42px, 7vw, 80px); margin: 0; line-height: 1; }
+.hero .lede { color: var(--muted); font-size: clamp(17px, 2vw, 20px); max-width: 720px; margin: 22px 0 30px; }
+.stats { display: flex; flex-wrap: wrap; gap: 12px; }
+.stat { background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px 18px; }
+.stat b { display: block; font: 700 24px/1.1 "Space Grotesk", sans-serif; }
+.stat span { color: var(--muted); font-size: 13px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); font-size: 14px; margin: 8px 0 26px; }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+
+/* ---------- Grid & cards ---------- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; padding-bottom: 80px; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  display: flex; flex-direction: column; cursor: pointer; transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+.card:hover { transform: translateY(-4px); border-color: #3a4256; box-shadow: var(--shadow); }
+.card.feature { grid-column: 1 / -1; }
+@media (min-width: 900px) {
+  .card.feature { flex-direction: row; }
+  .card.feature .media { flex: 1.25; height: auto; min-height: 460px; }
+  .card.feature .media .slides { position: absolute; inset: 0; }
+  .card.feature .body { flex: 1; }
+}
+
+.media { position: relative; height: 290px; background: var(--card-2); overflow: hidden; }
+.media .slides { display: flex; height: 100%; transition: transform .45s cubic-bezier(.3,.8,.3,1); }
+.media .slide { flex: 0 0 100%; height: 100%; display: grid; place-items: center; padding: 14px; }
+.media .slide img { max-height: 100%; width: auto; max-width: 100%; object-fit: contain; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.media .slide.cover { padding: 0; }
+.media .slide.cover img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; box-shadow: none; }
+.media .slide.phones { gap: 10px; display: flex; justify-content: center; align-items: center; }
+.media .slide.phones img { height: 100%; width: auto; }
+.media .cap {
+  position: absolute; left: 12px; bottom: 12px; font-size: 12px; color: #dfe4ee;
+  background: rgba(10,12,16,.72); backdrop-filter: blur(6px); padding: 5px 10px; border-radius: 999px; pointer-events: none;
+}
+.nav {
+  position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15); background: rgba(10,12,16,.65); color: #fff; font-size: 18px; cursor: pointer;
+  display: grid; place-items: center; opacity: 0; transition: opacity .2s;
+}
+.media:hover .nav, .modal .nav { opacity: 1; }
+@media (hover: none) { .nav { opacity: 1; } }
+.nav.prev { left: 10px; } .nav.next { right: 10px; }
+.dots { position: absolute; right: 12px; bottom: 14px; display: flex; gap: 6px; }
+.dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.35); }
+.dots span.on { background: #fff; }
+
+.body { padding: 22px 22px 22px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.top { display: flex; align-items: center; gap: 12px; }
+.top img { width: 44px; height: 44px; border-radius: 11px; flex: none; }
+.top h3 { margin: 0; font-size: 22px; line-height: 1.15; }
+.top .kind { color: var(--muted); font-size: 13px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid; width: fit-content; }
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.badge.live { color: var(--live); border-color: rgba(61,220,151,.35); background: rgba(61,220,151,.08); }
+.badge.desk { color: var(--desk); border-color: rgba(90,180,255,.35); background: rgba(90,180,255,.08); }
+.badge.wip  { color: var(--wip);  border-color: rgba(197,139,255,.35); background: rgba(197,139,255,.08); }
+.desc { color: #c9cfdb; margin: 0; }
+.goal { border-left: 3px solid var(--wip); background: rgba(197,139,255,.07); padding: 10px 14px; border-radius: 0 10px 10px 0; color: #ddd0f2; font-size: 14.5px; margin: 0; }
+.goal b { color: var(--wip); }
+ul.feats { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+ul.feats li { position: relative; padding-left: 22px; color: #c9cfdb; font-size: 14.5px; }
+ul.feats li::before { content: "✦"; position: absolute; left: 0; color: var(--accent); font-size: 12px; top: 2px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
+.tags span { font-size: 12px; color: var(--muted); background: var(--bg-2); border: 1px solid var(--line); padding: 3px 9px; border-radius: 6px; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- Modal ---------- */
+.modal { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(4,5,8,.78); backdrop-filter: blur(8px); }
+.modal.open { display: flex; }
+.sheet { background: var(--card); border: 1px solid var(--line); border-radius: 22px; width: min(1100px, 100%); max-height: calc(100vh - 48px); overflow: auto; box-shadow: var(--shadow); animation: rise .35s ease both; position: relative; }
+.sheet .media { height: min(62vh, 560px); }
+.sheet .body { padding: 26px 30px 30px; }
+.sheet .cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; }
+@media (max-width: 800px) { .sheet .cols { grid-template-columns: 1fr; } }
+.close { position: absolute; top: 14px; right: 14px; z-index: 3; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: rgba(10,12,16,.7); color: #fff; font-size: 20px; cursor: pointer; }
+.sheet h4 { margin: 0 0 10px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+.pets { display: flex; flex-wrap: wrap; gap: 6px; }
+.pets span { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--line); }
+
+footer { border-top: 1px solid var(--line); color: var(--faint); font-size: 14px; padding: 30px 0 50px; text-align: center; }
+
+@media (max-width: 560px) {
+  .wrap { padding: 0 16px; }
+  .grid { grid-template-columns: 1fr; }
+  header.hero { padding-top: 64px; }
+  .media { height: 250px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; }
+  .sheet .body { padding: 20px; }
+  .modal { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="locked">
+
+<div id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="welcome-box">
+    <p class="hi">Hey there</p>
+    <h1 id="welcome-title">Welcome<br>Jared Shapiro</h1>
+    <p>Thanks for stopping by. Here's everything I've built by vibe coding with AI.</p>
+    <button class="btn" id="enter">See my projects <span aria-hidden="true">→</span></button>
+  </div>
+</div>
+
+<main class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Portfolio · built with Claude Code</p>
+    <h1>Adi's AI Projects</h1>
+    <p class="lede">I build real things by pairing with AI. I describe what I want, steer the design and test everything, and Claude writes the code with me. These are apps, automations and games I've shipped or am building right now.</p>
+    <div class="stats">
+      <div class="stat"><b>8</b><span>projects</span></div>
+      <div class="stat"><b>3</b><span>live on the web</span></div>
+      <div class="stat"><b>10+</b><span>YouTube channels automated</span></div>
+      <div class="stat"><b>7</b><span>languages and frameworks</span></div>
+    </div>
+  </header>
+
+  <div class="legend" aria-label="Status legend">
+    <span><i style="background:var(--live)"></i>Live: click to open the site</span>
+    <span><i style="background:var(--desk)"></i>Desktop / local app: click for details</span>
+    <span><i style="background:var(--wip)"></i>In progress</span>
+  </div>
+
+  <section class="grid" id="grid" aria-label="Projects"></section>
+</main>
+
+<footer>
+  <div class="wrap">Designed and built by Adi, with Claude Code · 2026</div>
+</footer>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true" id="sheet"></div>
+</div>
+
+<script>
+const PROJECTS = [
+  {
+    id: 'clipper', feature: true,
+    name: 'Pineapple Clipper', kind: 'YouTube Shorts automation · Desktop app',
+    icon: 'images/clipper-icon.webp', status: 'live', statusText: 'Live, posting daily',
+    url: 'https://10adityapawar.github.io/',
+    desc: 'A desktop tool that runs a network of YouTube Shorts clip channels on its own. It finds the moments people are watching most from livestreamers like IShowSpeed, Kai Cenat and xQc. Then it edits them into vertical videos with subtitles, has AI write the captions, and uploads them after I approve them.',
+    features: [
+      'Finds trending Twitch and Kick clips plus the loudest moments in YouTube streams, then ranks them by views',
+      'Renders 1080×1920 Shorts with a blurred background, a hook banner and burned-in subtitles (local Whisper AI)',
+      'Claude writes each banner, title and caption, and follows strict style rules',
+      'A review queue where I can edit, re-render, skip or post each clip',
+      'Uploads through the official YouTube Data API (submitted for Google’s API compliance audit)',
+      'A phone stats dashboard and a "radar" that tracks competitor Shorts',
+    ],
+    tags: ['Python', 'Claude API', 'Whisper', 'FFmpeg', 'YouTube API', 'yt-dlp'],
+    images: [
+      { src: 'images/clipper-review.webp', cap: 'Review-before-posting screen' },
+      { src: 'images/banner-speed.webp', cap: 'Channel art I generated in code', cover: true },
+      { src: 'images/clipper-channels.webp', cap: 'The channel lineup' },
+      { src: 'images/banner-plaqueboymax.webp', cap: 'Each channel has its own branding', cover: true },
+    ],
+  },
+  {
+    id: 'pour', name: 'Pour Decisions', kind: 'AI coffee recipe web app',
+    icon: 'images/pour-icon.webp', status: 'live', statusText: 'Live web app',
+    url: 'https://pour-decisions.pour-decisions.workers.dev',
+    desc: 'Make your favorite coffee-shop and drive-thru drinks at home. It\'s an installable app that works offline, with 37 step-by-step recipes and an AI Barista that invents a custom drink from whatever you\'re craving.',
+    features: [
+      'AI Barista: describe a craving and Claude makes a one-of-a-kind recipe',
+      '"What can I make?" matches drinks to what\'s in your kitchen',
+      'Seasonal picks, search, filters, favorites and a size switcher',
+      'Installs to your phone and works offline',
+      'Rate limits on the AI to keep costs safe',
+    ],
+    tags: ['JavaScript', 'Cloudflare Workers', 'Claude API', 'PWA'],
+    images: [
+      { phones: ['images/pour-home.webp', 'images/pour-barista.webp'], cap: 'Home and AI Barista' },
+      { phones: ['images/pour-kitchen.webp', 'images/pour-drinks.webp'], cap: '"What can I make?" and the drink list' },
+    ],
+  },
+  {
+    id: 'hard', name: '75 Hard Tracker', kind: 'Fitness challenge app',
+    icon: 'images/hard-icon.webp', status: 'live', statusText: 'Live web app',
+    url: 'https://10adityapawar.github.io/75-hard/',
+    desc: 'A phone app for the 75 Hard challenge. It tracks every daily task, scores the day at midnight and enforces the rules: miss a task and you go back 10 days.',
+    features: [
+      'Seven daily tasks: 8 AM check-in, two workouts, a gallon of water, a progress photo, a personal goal and diet',
+      'Progress calendar with streaks, missed days and days left',
+      'Diet tab with a protein target and a barcode food scanner',
+      'Progress photos, reminders and onboarding',
+      'Installs to the iPhone home screen',
+    ],
+    tags: ['React Native', 'Expo', 'TypeScript', 'GitHub Pages'],
+    images: [
+      { phones: ['images/hard-today.webp', 'images/hard-progress.webp'], cap: 'Today and Progress' },
+      { phones: ['images/hard-onboard.webp', 'images/hard-diet.webp'], cap: 'Onboarding and Diet' },
+    ],
+  },
+  {
+    id: 'jarvis', name: 'J.A.R.V.I.S.', kind: 'Voice AI assistant · Windows app',
+    icon: 'images/jarvis-icon.webp', status: 'desk', statusText: 'Desktop app',
+    desc: 'My own Iron Man–style AI assistant. Say "Hey Jarvis" and it answers in a British voice. It can check my school assignments, read and draft emails, manage my calendar and look through my code projects.',
+    features: [
+      '"Hey Jarvis" wake word, follow-up questions without repeating it, and push-to-talk',
+      'Speech recognition runs privately on my PC (Whisper AI)',
+      'Neural British voice with a "suit speaker" audio effect',
+      'Canvas: upcoming, missing and graded assignments',
+      'Gmail and Google Calendar: read, draft and schedule (asks before sending)',
+      'Can explore and open any of my coding projects',
+      'Phone companion app, paired by QR code over a private network',
+      'Animated arc-reactor HUD with live schedule, inbox and project panels',
+    ],
+    tags: ['Electron', 'Node.js', 'Claude API', 'Whisper', 'Google APIs'],
+    images: [
+      { src: 'images/jarvis-hud.webp', cap: 'The HUD (shown with sample data)' },
+      { src: 'images/jarvis-icon.webp', cap: 'App icon: the arc reactor' },
+    ],
+  },
+  {
+    id: 'gridline', name: 'Gridline', kind: 'AI tool for architecture firms',
+    icon: null, status: 'desk', statusText: 'Working prototype',
+    desc: 'An AI assistant for commercial architects. Contractors send hundreds of questions (RFIs) during construction. Gridline reads the project\'s spec book and drawings, finds the pages that answer each question, flags where the documents contradict each other and drafts a cited reply for the architect to approve.',
+    features: [
+      'Upload a project\'s spec book and drawing set as PDFs, fully indexed and searchable',
+      'Log RFIs and submittals with due dates and overdue tracking',
+      'Finds the answering pages and cites them',
+      'Flags conflicts between specs and drawings',
+      'Drafts a response for the architect to review, edit and issue',
+      'CSV export, print view and a demo project with built-in conflicts',
+    ],
+    tags: ['Next.js', 'React', 'TypeScript', 'SQLite', 'Claude API'],
+    images: [
+      { src: 'images/gridline-rfi.webp', cap: 'An RFI with the conflict it found and its sources' },
+      { src: 'images/gridline-project.webp', cap: 'The project\'s RFI and submittal log' },
+      { src: 'images/gridline-home.webp', cap: 'Getting started' },
+    ],
+  },
+  {
+    id: 'copytrader', name: 'copytrader', kind: 'Trading research tool',
+    icon: null, status: 'desk', statusText: 'Local app',
+    desc: 'A tool that follows publicly disclosed stock trades by members of Congress, company insiders and big funds, and turns them into trade ideas. It practices on $80k of paper money and never trades anything until I press Approve.',
+    features: [
+      'Watches chosen investors (e.g. Nancy Pelosi) for new disclosed trades',
+      'Strategy rules filter out stale filings',
+      'Paper trading at live prices, with performance compared against the S&P 500',
+      'Plugs into Claude Desktop so I can review trades in chat',
+      'Every trade requires my approval',
+      'Backed by about 590 automated tests',
+    ],
+    tags: ['Python', 'FastAPI', 'SQLite', 'MCP', 'Claude'],
+    images: [
+      { src: 'images/copytrader-dash.webp', cap: 'The dashboard (paper money account)' },
+    ],
+  },
+  {
+    id: 'roblox', name: 'Pet Simulator', kind: 'Roblox game',
+    icon: 'images/roblox-pass-2x-coins.webp', status: 'wip', statusText: 'In development',
+    goal: 'A full pet-collecting Roblox game: hatch pets, break coins, unlock new worlds, build a farm and rebirth. It\'s playable and published privately while I finish it before a public launch.',
+    desc: 'Your pets break coin piles and chests for you. Spend the coins on eggs to hatch rarer pets, unlock new zones that pay more, and build up a farm that earns while you play.',
+    features: [
+      'Three zones: Sunny Meadow (1×), Dusty Desert (5×) and Frosty Peaks (25×)',
+      'Three eggs with hatch animations and a legendary fanfare',
+      'About 18 pets with Shiny, Mythic, Golden and Rainbow variants',
+      'Pet Lab to combine and upgrade pets, plus selling and inventory slots',
+      'Farms: coin generator, windmill boosts, egg incubator and crops that grow in real time',
+      'Rebirths, quests, music and a store with real game passes',
+    ],
+    pets: ['Puppy', 'Kitty', 'Fox', 'Unicorn', 'Camel', 'Sphinx', 'Pharaoh Cat', 'Penguin', 'Yeti', 'Ice Dragon', 'Aurora Phoenix'],
+    tags: ['Roblox', 'Luau', 'Rojo'],
+    images: [
+      { row: ['images/roblox-pass-2x-coins.webp', 'images/roblox-pass-extra-slots.webp', 'images/roblox-pass-auto-clicker.webp'], cap: 'Game pass icons I designed' },
+      { row: ['images/roblox-product-coin-pack.webp', 'images/roblox-product-mega-coins.webp'], cap: 'In-game store products' },
+    ],
+  },
+  {
+    id: 'kids', feature: true, name: 'Pineapple Pals', kind: 'Kids sing-along channel · Pineapple Clipper add-on',
+    icon: 'images/kids-icon.webp', status: 'wip', statusText: 'In progress',
+    goal: 'Post one original sing-along video for little kids every day, made completely from scratch by code, with no stock footage and nothing reused.',
+    desc: 'A "Kids mode" for Pineapple Clipper that makes nursery-rhyme music videos from nothing. Claude writes the songs. The code sings them, makes the backing music, and animates the scene with karaoke lyrics.',
+    features: [
+      'Claude writes original kid-friendly songs',
+      'Text-to-speech re-pitched to sing the melody',
+      'Backing music, animated scenes and karaoke lyrics, all generated by code',
+      'Uploads marked "made for kids"',
+    ],
+    tags: ['Python', 'Claude', 'Audio synthesis', 'FFmpeg'],
+    images: [
+      { phones: ['images/kids-frame-1.webp', 'images/kids-frame-2.webp'], cap: 'Frames from the first song: Twinkle Twinkle' },
+      { src: 'images/banner-kids.webp', cap: 'Channel banner', cover: true },
+    ],
+  },
+];
+
+const STATUS_CLASS = { live: 'live', desk: 'desk', wip: 'wip' };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function slideHTML(img, eager) {
+  const load = eager ? '' : ' loading="lazy"';
+  if (img.phones) return `<div class="slide phones">${img.phones.map((s) => `<img src="${s}" alt="${esc(img.cap)}"${load}>`).join('')}</div>`;
+  if (img.row) return `<div class="slide phones" style="gap:16px">${img.row.map((s) => `<img src="${s}" alt="${esc(img.cap)}" style="height:auto;width:calc(${100 / img.row.length}% - 12px);max-width:190px"${load}>`).join('')}</div>`;
+  return `<div class="slide${img.cover ? ' cover' : ''}"><img src="${img.src}" alt="${esc(img.cap)}"${load}></div>`;
+}
+
+function mediaHTML(p, eager) {
+  const multi = p.images.length > 1;
+  return `<div class="media" data-i="0">
+    <div class="slides">${p.images.map((img, i) => slideHTML(img, eager && i === 0)).join('')}</div>
+    <span class="cap">${esc(p.images[0].cap)}</span>
+    ${multi ? `<button class="nav prev" aria-label="Previous picture">‹</button><button class="nav next" aria-label="Next picture">›</button>
+    <div class="dots">${p.images.map((_, i) => `<span class="${i ? '' : 'on'}"></span>`).join('')}</div>` : ''}
+  </div>`;
+}
+
+function iconHTML(p) {
+  if (!p.icon) {
+    const letter = p.name[0].toUpperCase();
+    return `<div style="width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,#2b3550,#1a2030);font:700 20px 'Space Grotesk';color:var(--accent)">${letter}</div>`;
+  }
+  return `<img src="${p.icon}" alt="" style="object-fit:cover">`;
+}
+
+function cardHTML(p) {
+  const shown = p.feature ? p.features : p.features.slice(0, 4);
+  return `<article class="card${p.feature ? ' feature' : ''}" tabindex="0" data-id="${p.id}" aria-label="${esc(p.name)}">
+    ${mediaHTML(p, p.feature)}
+    <div class="body">
+      <div class="top">${iconHTML(p)}<div><h3>${esc(p.name)}</h3><div class="kind">${esc(p.kind)}</div></div></div>
+      <span class="badge ${STATUS_CLASS[p.status]}">${esc(p.statusText)}</span>
+      ${p.goal ? `<p class="goal"><b>Goal:</b> ${esc(p.goal)}</p>` : ''}
+      <p class="desc">${esc(p.desc)}</p>
+      <ul class="feats">${shown.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
+      <div class="actions">
+        ${p.url ? `<a class="btn sm" href="${p.url}" target="_blank" rel="noopener" data-stop>Visit site ↗</a>` : ''}
+        <button class="btn sm ghost" data-details>${p.url ? 'Details' : 'See details & pictures'}</button>
+      </div>
+      <div class="tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>
+    </div>
+  </article>`;
+}
+
+function modalHTML(p) {
+  return `<button class="close" aria-label="Close">✕</button>
+    ${mediaHTML(p, true)}
+    <div class="body">
+      <div class="top">${iconHTML(p)}<div><h3 style="font-size:28px">${esc(p.name)}</h3><div class="kind">${esc(p.kind)}</div></div></div>
+      <div class="cols">
+        <div style="display:grid;gap:14px;align-content:start">
+          <span class="badge ${STATUS_CLASS[p.status]}">${esc(p.statusText)}</span>
+          ${p.goal ? `<p class="goal"><b>Goal:</b> ${esc(p.goal)}</p>` : ''}
+          <p class="desc">${esc(p.desc)}</p>
+          ${p.pets ? `<div><h4>Some of the pets</h4><div class="pets">${p.pets.map((x) => `<span>${esc(x)}</span>`).join('')}</div></div>` : ''}
+          <div class="tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>
+          ${p.url ? `<div><a class="btn" href="${p.url}" target="_blank" rel="noopener">Open ${esc(p.name)} ↗</a></div>` : ''}
+        </div>
+        <div><h4>What it can do</h4><ul class="feats">${p.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>
+      </div>
+    </div>`;
+}
+
+// ---------- Carousels ----------
+function wireCarousel(media, p) {
+  if (!media || p.images.length < 2) return;
+  const slides = media.querySelector('.slides'), cap = media.querySelector('.cap'), dots = media.querySelectorAll('.dots span');
+  const go = (n) => {
+    const i = (n + p.images.length) % p.images.length;
+    media.dataset.i = i;
+    slides.style.transform = `translateX(-${i * 100}%)`;
+    cap.textContent = p.images[i].cap;
+    dots.forEach((d, k) => d.classList.toggle('on', k === i));
+  };
+  media.querySelector('.prev').addEventListener('click', (e) => { e.stopPropagation(); go(+media.dataset.i - 1); });
+  media.querySelector('.next').addEventListener('click', (e) => { e.stopPropagation(); go(+media.dataset.i + 1); });
+  let x0 = null;
+  media.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  media.addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) { go(+media.dataset.i + (dx < 0 ? 1 : -1)); media.dataset.swiped = '1'; setTimeout(() => delete media.dataset.swiped, 300); }
+  });
+  return go;
+}
+
+// ---------- Render ----------
+const grid = document.getElementById('grid');
+grid.innerHTML = PROJECTS.map(cardHTML).join('');
+const byId = Object.fromEntries(PROJECTS.map((p) => [p.id, p]));
+
+grid.querySelectorAll('.card').forEach((card) => {
+  const p = byId[card.dataset.id];
+  const media = card.querySelector('.media');
+  wireCarousel(media, p);
+  const activate = (e) => {
+    if (e.target.closest('[data-stop]') || e.target.closest('.nav') || media.dataset.swiped) return;
+    if (e.target.closest('[data-details]') || !p.url) return openModal(p);
+    window.open(p.url, '_blank', 'noopener');
+  };
+  card.addEventListener('click', activate);
+  card.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === card) { e.preventDefault(); activate(e); } });
+});
+
+// ---------- Modal ----------
+const modal = document.getElementById('modal'), sheet = document.getElementById('sheet');
+let lastFocus = null;
+function openModal(p) {
+  lastFocus = document.activeElement;
+  sheet.innerHTML = modalHTML(p);
+  sheet.setAttribute('aria-label', p.name);
+  wireCarousel(sheet.querySelector('.media'), p);
+  modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('locked');
+  sheet.scrollTop = 0;
+  sheet.querySelector('.close').addEventListener('click', closeModal);
+  sheet.querySelector('.close').focus();
+}
+function closeModal() {
+  modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('locked');
+  lastFocus?.focus();
+}
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+// ---------- Welcome ----------
+const welcome = document.getElementById('welcome');
+function enter() {
+  if (welcome.classList.contains('gone')) return;
+  welcome.classList.add('gone');
+  document.body.classList.remove('locked');
+  setTimeout(() => welcome.remove(), 700);
+}
+document.getElementById('enter').addEventListener('click', enter);
+document.getElementById('enter').focus();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { if (modal.classList.contains('open')) closeModal(); else enter(); }
+  if (modal.classList.contains('open')) {
+    const m = sheet.querySelector('.media');
+    if (e.key === 'ArrowRight') m?.querySelector('.next')?.click();
+    if (e.key === 'ArrowLeft') m?.querySelector('.prev')?.click();
+  }
+});
+
+// Starfield behind the welcome popup
+(() => {
+  const c = document.getElementById('stars'), ctx = c.getContext('2d');
+  let w, h, stars, raf;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function size() {
+    const d = devicePixelRatio || 1;
+    w = c.width = innerWidth * d; h = c.height = innerHeight * d;
+    stars = Array.from({ length: 140 }, () => ({ x: Math.random() * w, y: Math.random() * h, r: (Math.random() * 1.4 + .3) * d, s: Math.random() * .3 + .05, a: Math.random() }));
+  }
+  function frame() {
+    if (!document.body.contains(c)) return cancelAnimationFrame(raf);
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      s.y -= s.s; if (s.y < 0) { s.y = h; s.x = Math.random() * w; }
+      s.a += (Math.random() - .5) * .05; s.a = Math.max(.15, Math.min(1, s.a));
+      ctx.globalAlpha = s.a; ctx.fillStyle = Math.random() < .002 ? '#ffc94a' : '#fff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
+    }
+    if (!reduce) raf = requestAnimationFrame(frame);
+  }
+  size(); frame(); addEventListener('resize', size);
+})();
+</script>
+</body>
+</html>
