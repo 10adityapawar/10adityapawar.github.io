@@ -149,6 +149,8 @@ ul.feats li::before { content: "✦"; position: absolute; left: 0; color: var(--
 .modal.open { display: flex; }
 .sheet { background: var(--card); border: 1px solid var(--line); border-radius: 22px; width: min(1100px, 100%); max-height: calc(100vh - 48px); overflow: auto; box-shadow: var(--shadow); animation: rise .35s ease both; position: relative; }
 .sheet .media { height: min(62vh, 560px); }
+.sheet .slide.cover { padding: 14px; }
+.sheet .slide.cover img { object-fit: contain; border-radius: 10px; }
 .sheet .body { padding: 26px 30px 30px; }
 .sheet .cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; }
 @media (max-width: 800px) { .sheet .cols { grid-template-columns: 1fr; } }
@@ -189,9 +191,9 @@ footer { border-top: 1px solid var(--line); color: var(--faint); font-size: 14px
     <h1>Adi's AI Projects</h1>
     <p class="lede">I build real things by pairing with AI. I describe what I want, steer the design and test everything, and Claude writes the code with me. These are apps, automations and games I've shipped or am building right now.</p>
     <div class="stats">
-      <div class="stat"><b>8</b><span>projects</span></div>
+      <div class="stat"><b>7</b><span>projects</span></div>
       <div class="stat"><b>3</b><span>live on the web</span></div>
-      <div class="stat"><b>10+</b><span>YouTube channels automated</span></div>
+      <div class="stat"><b>24K+</b><span>views on my AI-made Shorts</span></div>
       <div class="stat"><b>7</b><span>languages and frameworks</span></div>
     </div>
   </header>
@@ -220,20 +222,23 @@ const PROJECTS = [
     name: 'Pineapple Clipper', kind: 'YouTube Shorts automation · Desktop app',
     icon: 'images/clipper-icon.webp', status: 'live', statusText: 'Live, posting daily',
     url: 'https://10adityapawar.github.io/',
-    desc: 'A desktop tool that runs a network of YouTube Shorts clip channels on its own. It finds the moments people are watching most from livestreamers like IShowSpeed, Kai Cenat and xQc. Then it edits them into vertical videos with subtitles, has AI write the captions, and uploads them after I approve them.',
+    desc: 'A desktop tool that runs a network of YouTube Shorts clip channels on its own. It finds the moments people are watching most from livestreamers like IShowSpeed, Kai Cenat and xQc. Then it edits them into vertical videos with subtitles, has AI write the captions, and uploads them after I approve them. So far its Shorts have 24,000+ views across 146 videos.',
     features: [
       'Finds trending Twitch and Kick clips plus the loudest moments in YouTube streams, then ranks them by views',
       'Renders 1080×1920 Shorts with a blurred background, a hook banner and burned-in subtitles (local Whisper AI)',
       'Claude writes each banner, title and caption, and follows strict style rules',
       'A review queue where I can edit, re-render, skip or post each clip',
       'Uploads through the official YouTube Data API (submitted for Google’s API compliance audit)',
-      'A phone stats dashboard and a "radar" that tracks competitor Shorts',
+      'Tracks views, likes and watch time for every Short, with a phone stats dashboard',
+      'A "radar" that tracks what competitor Shorts are doing',
     ],
     tags: ['Python', 'Claude API', 'Whisper', 'FFmpeg', 'YouTube API', 'yt-dlp'],
     images: [
+      { src: 'images/clipper-growth.webp', cap: '24,455 views in 18 days (from the app’s own stats tracker)' },
+      { phones: ['images/clipper-stats-1.webp', 'images/clipper-stats-2.webp'], cap: 'Live stats screen: views per channel and top Shorts' },
       { src: 'images/clipper-review.webp', cap: 'Review-before-posting screen' },
-      { src: 'images/banner-speed.webp', cap: 'Channel art I generated in code', cover: true },
       { src: 'images/clipper-channels.webp', cap: 'The channel lineup' },
+      { src: 'images/banner-speed.webp', cap: 'Channel art I generated in code', cover: true },
       { src: 'images/banner-plaqueboymax.webp', cap: 'Each channel has its own branding', cover: true },
     ],
   },
@@ -345,25 +350,15 @@ const PROJECTS = [
     pets: ['Puppy', 'Kitty', 'Fox', 'Unicorn', 'Camel', 'Sphinx', 'Pharaoh Cat', 'Penguin', 'Yeti', 'Ice Dragon', 'Aurora Phoenix'],
     tags: ['Roblox', 'Luau', 'Rojo'],
     images: [
+      { src: 'images/roblox-game-1.webp', cap: 'Shiny pets and a Crystal Deer following me', cover: true },
+      { src: 'images/roblox-game-2.webp', cap: 'Hatching a rare Crystal Deer (0.2% chance)', cover: true },
+      { src: 'images/roblox-game-3.webp', cap: 'My farm: windmill, buildings and stored coins', cover: true },
+      { src: 'images/roblox-game-4.webp', cap: 'The Pet Lab', cover: true },
+      { src: 'images/roblox-game-5.webp', cap: 'A pet army breaking coins', cover: true },
+      { src: 'images/roblox-game-6.webp', cap: 'A farm plot in the desert zone', cover: true },
+      { src: 'images/roblox-game-7.webp', cap: 'Menus: Pets, Rebirth, Store, Rewards and Auto Farm' },
       { row: ['images/roblox-pass-2x-coins.webp', 'images/roblox-pass-extra-slots.webp', 'images/roblox-pass-auto-clicker.webp'], cap: 'Game pass icons I designed' },
       { row: ['images/roblox-product-coin-pack.webp', 'images/roblox-product-mega-coins.webp'], cap: 'In-game store products' },
-    ],
-  },
-  {
-    id: 'kids', feature: true, name: 'Pineapple Pals', kind: 'Kids sing-along channel · Pineapple Clipper add-on',
-    icon: 'images/kids-icon.webp', status: 'wip', statusText: 'In progress',
-    goal: 'Post one original sing-along video for little kids every day, made completely from scratch by code, with no stock footage and nothing reused.',
-    desc: 'A "Kids mode" for Pineapple Clipper that makes nursery-rhyme music videos from nothing. Claude writes the songs. The code sings them, makes the backing music, and animates the scene with karaoke lyrics.',
-    features: [
-      'Claude writes original kid-friendly songs',
-      'Text-to-speech re-pitched to sing the melody',
-      'Backing music, animated scenes and karaoke lyrics, all generated by code',
-      'Uploads marked "made for kids"',
-    ],
-    tags: ['Python', 'Claude', 'Audio synthesis', 'FFmpeg'],
-    images: [
-      { phones: ['images/kids-frame-1.webp', 'images/kids-frame-2.webp'], cap: 'Frames from the first song: Twinkle Twinkle' },
-      { src: 'images/banner-kids.webp', cap: 'Channel banner', cover: true },
     ],
   },
 ];
